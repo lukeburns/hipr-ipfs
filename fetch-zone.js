@@ -6,17 +6,20 @@ const { concat } = require('uint8arrays/concat')
 const { toString } = require('uint8arrays/to-string')
 const decode = require('./decode')
 
-let node
+let node = null
+create().then(o => node = o)
 
 module.exports = function (cid) {
-  cid = decode(cid)
   return new Promise(async (resolve, reject) => {
     if (!node) {
-      node = await create()
+      reject('not ready')
     }
+
+    cid = decode(cid)
+    
     const zone = new Zone()
     try {
-      for await (const chunk of split(node.cat('QmRhPDZ6DAnWKpzpt8tUwqNujS9uyZp69nDKF5Re9wrfdk'))) {
+      for await (const chunk of split(node.cat(cid))) {
         const line = toString(chunk)
         if (line.length) {
           zone.fromString(line)

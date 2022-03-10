@@ -1,6 +1,6 @@
 # ipfs hipr resolver
 
-resolves `_ipfs` [hip5](https://github.com/handshake-org/HIPs/blob/master/HIP-0005.md) protocol ns records (but recursively) using [hipr](https://github.com/lukeburns/hipr). we are currently just resolving with the cloudflare ipfs gateway.
+[hipr](https://github.com/lukeburns/hipr) middleware for the `_ipfs` [hip5](https://github.com/handshake-org/HIPs/blob/master/HIP-0005.md) protocol. trustlessly resolves zone files from the ipfs dht.
 
 ## usage
 

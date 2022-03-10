@@ -11,8 +11,12 @@ function middleware () {
       try {
         let zone = zones.get(cid) 
         if (!zone) {
-          zone = await fetchZone(cid)
-          zones.set(cid, zone)
+          try {
+            zone = await fetchZone(cid)
+            zones.set(cid, zone)
+          } catch (error) {
+            throw error
+          }
         }
         const res = zone.resolve(name, types[type])
         return res
