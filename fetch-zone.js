@@ -1,24 +1,25 @@
 const { Zone } = require('bns')
+const { create } = require('ipfs-core')
+const all = require('it-all')
+const split = require('it-split')
+const { concat } = require('uint8arrays/concat')
+const { toString } = require('uint8arrays/to-string')
 const decode = require('./decode')
 
-const fetch = (...args) => import('node-fetch').then(({default: fetch}) => fetch(...args));
+let node
 
-module.exports = function (cid, gateway='https://cloudflare-ipfs.com/ipfs/') {
+module.exports = function (cid) {
   cid = decode(cid)
   return new Promise(async (resolve, reject) => {
+    if (!node) {
+      node = await create()
+    }
     const zone = new Zone()
     try {
-      const response = await fetch(`${gateway}${cid}`)
-      const body = await response.text()
-      
-      for (let line of body.split('\n')) {
-        try {
-          if (line.length) {
-            line = line.toString()
-            zone.fromString(line)
-          }
-        } catch (error) {
-          return reject(error)
+      for await (const chunk of split(node.cat('QmRhPDZ6DAnWKpzpt8tUwqNujS9uyZp69nDKF5Re9wrfdk'))) {
+        const line = toString(chunk)
+        if (line.length) {
+          zone.fromString(line)
         }
       }
       resolve(zone)
