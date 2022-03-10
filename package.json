@@ -1,0 +1,22 @@
+{
+  "name": "hipr-ipfs",
+  "version": "0.2.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "Luke Burns",
+  "license": "UNLICENSED",
+  "dependencies": {
+    "bs32": "^0.1.6",
+    "bs58": "^5.0.0",
+    "node-fetch": "^3.2.2"
+  },
+  "peerDependencies": {
+    "bns": "^0.15.0"
+  },
+  "devDependencies": {
+    "hipr": "^0.2.0"
+  }
+}
