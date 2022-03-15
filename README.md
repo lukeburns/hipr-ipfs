@@ -1,8 +1,6 @@
-# ipfs hipr resolver
+# IPFS Middleware
 
-[hipr](https://github.com/lukeburns/hipr) middleware for the `_ipfs` [hip5](https://github.com/handshake-org/HIPs/blob/master/HIP-0005.md) protocol. trustlessly resolves zone files from the ipfs dht.
-
-## usage
+## Usage
 
 `hipr-ipfs` is [hipr](https://github.com/lukeburns/hipr) middleware. 
 
@@ -16,30 +14,31 @@ hipr install hipr-ipfs
 ```
 and spin up a server
 ```
-hipr hipr-ipfs 127.0.0.1:5333 198.41.0.4
+hipr hipr-ipfs :5333 198.41.0.4
 ```
 this starts a recursive server on port 5333 capable of resolving zone files from ipfs using one of ICANN's root server as a stub resolver. If you want to resolve handshake names, and you are running [hsd](https://github.com/handshake-org/hsd) or [hnsd](https://github.com/handshake-org/hnsd) with a root server on port 5349, then start hipr with
 ```
-hipr hipr-ipfs 127.0.0.1:5333 127.0.0.1:5349
+hipr hipr-ipfs :5333 :5349
 ```
 
-now, in a new shell, you can test that hipr is resolving properly:
+## Example
+
+You can test that hipr is resolving properly by running
 ```
 > dig @127.0.0.1 -p 5333 ipfs.chan0
 66.42.108.201
 ```
-which is resolving from the ipfs zone file [QmRhPDZ6DAnWKpzpt8tUwqNujS9uyZp69nDKF5Re9wrfdk](https://cloudflare-ipfs.com/ipfs/QmRhPDZ6DAnWKpzpt8tUwqNujS9uyZp69nDKF5Re9wrfdk).
+which resolves `ipfs.chan0 A` via the ipfs zone file [bafybeibr4k6zof34lj3goushjbzbruqa6eknfvqrrlmizvbjfkn5x4nw6m](https://bafybeibr4k6zof34lj3goushjbzbruqa6eknfvqrrlmizvbjfkn5x4nw6m.ipfs.infura-ipfs.io/) obtained from the HIP-5 NS record
+```
+ipfs.chan0. 3600 IN NS bafybeibr4k6zof34lj3goushjbzbruqa6eknfvqrrlmizvbjfkn5x4nw6m._ipfs.
+```
+in the parent zone `chan0`. Note, `bafybeibr4k6zof34lj3goushjbzbruqa6eknfvqrrlmizvbjfkn5x4nw6m` is the CIDv1 (base32) encoded IPFS content identifier.
 
-i have a hip5 ns record 
-```
-ipfs.chan0. 3600 IN NS ciqddyv5s4lxywtwm5jeosdsddjab4iu2llbdcwyrtkcsku33py3n4y._ipfs.
-```
-in my zone for the tld chan0, where `ciqddyv5s4lxywtwm5jeosdsddjab4iu2llbdcwyrtkcsku33py3n4y` is the [base32](https://github.com/bcoin-org/bs32) encoding of the cid `QmRhPDZ6DAnWKpzpt8tUwqNujS9uyZp69nDKF5Re9wrfdk`. you can use `encode.js` and `decode.js` in this repo for base32 encoding and decoding of base58-encoded ipfs cids.
+If you want to convert to CIDv1, you can use the [CID Inspector](https://cid.ipfs.io/#QmRhPDZ6DAnWKpzpt8tUwqNujS9uyZp69nDKF5Re9wrfdk).
 
+IMPORTANT: the CIDv0 (base58) encoding [QmRhPDZ6DAnWKpzpt8tUwqNujS9uyZp69nDKF5Re9wrfdk](https://cloudflare-ipfs.com/ipfs/QmRhPDZ6DAnWKpzpt8tUwqNujS9uyZp69nDKF5Re9wrfdk) cannot be used in your NS record. For example,
 ```
-> node encode QmRhPDZ6DAnWKpzpt8tUwqNujS9uyZp69nDKF5Re9wrfdk
-ciqddyv5s4lxywtwm5jeosdsddjab4iu2llbdcwyrtkcsku33py3n4y
-
-> node decode ciqddyv5s4lxywtwm5jeosdsddjab4iu2llbdcwyrtkcsku33py3n4y
-QmRhPDZ6DAnWKpzpt8tUwqNujS9uyZp69nDKF5Re9wrfdk
+; INVALID !!
+ipfs.chan0. 3600 IN NS QmRhPDZ6DAnWKpzpt8tUwqNujS9uyZp69nDKF5Re9wrfdk._ipfs.
 ```
+will not resolve properly, because hostnames are case-insensitive and the CID will be parsed as [qmrhpdz6danwkpzpt8tuwqnujs9uyzp69ndkf5re9wrfdk](https://cloudflare-ipfs.com/ipfs/qmrhpdz6danwkpzpt8tuwqnujs9uyzp69ndkf5re9wrfdk). You've been warned!
