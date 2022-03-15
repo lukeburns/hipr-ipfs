@@ -4,7 +4,7 @@ const { wire: { types } } = require('bns');
 function middleware () {
   const zones = new Map()
   return {
-    hostname: ':data.:protocol(_ipfs).', 
+    hostname: ':data.:protocol(_ipfs).:gateway?.', 
     handler: async ({ protocol, data }, name, type) => {
       data = data.split('.')
       const cid = data[data.length - 1]
