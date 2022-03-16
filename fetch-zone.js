@@ -11,7 +11,8 @@ create().then(o => node = o).catch(console.error)
 module.exports = function (cid) {
   return new Promise(async (resolve, reject) => {
     if (!node) {
-      reject('not ready')
+      console.error('ipfs swarm not ready')
+      return resolve(null)
     }
 
     const zone = new Zone()
@@ -27,5 +28,4 @@ module.exports = function (cid) {
       reject(error)
     }
   })
-  return zone
 }

@@ -13,8 +13,14 @@ function middleware () {
 
     const promise = new Promise((resolve, reject) => {
       fetchZone(cid).then(zone => {
-        zones.set(cid, zone)
-        resolve(zone)
+        if (zone) {
+          zones.set(cid, zone)
+          resolve(zone)
+        } else {
+          // No cache + Servfail until swarm is ready
+          zones.delete(cid)
+          resolve(new Promise(res => res))
+        }
       }).catch(reject)
     })
     zones.set(cid, promise)
